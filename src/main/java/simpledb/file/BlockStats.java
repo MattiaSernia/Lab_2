@@ -6,6 +6,7 @@ import simpledb.file.BlockId;
 public class BlockStats {
 	HashMap<String, Stats> fileMap= new HashMap<>();
 	// --- METHODS --- //
+	@Override
 	public String toString(){
 		String out = "";
 		for (String file : fileMap.keySet())

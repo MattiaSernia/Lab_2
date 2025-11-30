@@ -3,11 +3,14 @@ package simpledb.file;
 import java.io.*;
 import java.util.*;
 
+
+
 public class FileMgr {
    private File dbDirectory;
    private int blocksize;
    private boolean isNew;
    private Map<String,RandomAccessFile> openFiles = new HashMap<>();
+   private BlockStats bs = new BlockStats();
 
    public FileMgr(File dbDirectory, int blocksize) {
       this.dbDirectory = dbDirectory;
@@ -29,6 +32,7 @@ public class FileMgr {
          RandomAccessFile f = getFile(blk.fileName());
          f.seek(blk.number() * blocksize);
          f.getChannel().read(p.contents());
+         this.bs.logReadBlock(blk);
       }
       catch (IOException e) {
          throw new RuntimeException("cannot read block " + blk);
@@ -40,6 +44,7 @@ public class FileMgr {
          RandomAccessFile f = getFile(blk.fileName());
          f.seek(blk.number() * blocksize);
          f.getChannel().write(p.contents());
+         this.bs.logWrittenBlock(blk);
       }
       catch (IOException e) {
          throw new RuntimeException("cannot write block" + blk);
@@ -88,4 +93,15 @@ public class FileMgr {
       }
       return f;
    }
+   
+
+   public BlockStats getBlockStats(){
+      return this.bs;
+   }
+
+   public void resetStats(){
+      this.bs.reset();
+   }
+
+
 }

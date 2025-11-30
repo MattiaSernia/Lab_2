@@ -12,6 +12,7 @@ public class BufferMgr {
    private Buffer[] bufferpool;
    private int numAvailable;
    private static final long MAX_TIME = 10000; // 10 seconds
+   private String property;
    
    /**
     * Creates a buffer manager having the specified number 
@@ -25,6 +26,8 @@ public class BufferMgr {
       numAvailable = numbuffs;
       for (int i=0; i<numbuffs; i++)
          bufferpool[i] = new Buffer(fm, lm);
+      property = System.getProperty("simpledb.replacement");
+      
    }
    
    /**

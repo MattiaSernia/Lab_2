@@ -2,7 +2,8 @@ package simpledb.buffer;
 
 import simpledb.file.*;
 import simpledb.log.LogMgr;
-
+import simpledb.buffer.strategies.*;
+import java.util.ArrayDeque;
 /**
  * Manages the pinning and unpinning of buffers to blocks.
  * @author Edward Sciore
@@ -13,6 +14,7 @@ public class BufferMgr {
    private int numAvailable;
    private static final long MAX_TIME = 10000; // 10 seconds
    private String property;
+   private BufferStrategy strategy;
    
    /**
     * Creates a buffer manager having the specified number 
@@ -26,8 +28,7 @@ public class BufferMgr {
       numAvailable = numbuffs;
       for (int i=0; i<numbuffs; i++)
          bufferpool[i] = new Buffer(fm, lm);
-      property = System.getProperty("simpledb.replacement");
-      
+      strategy = instantiateStrategy();
    }
    
    /**
@@ -80,6 +81,7 @@ public class BufferMgr {
          }
          if (buff == null)
             throw new BufferAbortException();
+         strategy.pin(buff);
          return buff;
       }
       catch(InterruptedException e) {
@@ -124,9 +126,18 @@ public class BufferMgr {
    }
    
    private Buffer chooseUnpinnedBuffer() {
-      for (Buffer buff : bufferpool)
-         if (!buff.isPinned())
-         return buff;
-      return null;
+      return strategy.chooseUnpinnedBuffer();
+   }
+
+   private BufferStrategy instantiateStrategy()
+   {
+      switch (System.getProperty("simpledb.replacement")) {
+         case "LRU":
+            return new LRUStrategy(bufferpool);
+         case "FIFO":
+            return new FIFOStrategy(bufferpool);
+         default:
+            return new NaiveStrategy(bufferpool);
+      }
    }
 }

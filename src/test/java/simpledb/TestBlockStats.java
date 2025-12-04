@@ -171,6 +171,21 @@ public class TestBlockStats {
             assert(false);
         }
     }
+    @Test
+    public void testBlockStatsToString(){
+        try{
+            BlockStats bs = new BlockStats();
+            bs.logReadBlock(new BlockId("testfile", 0));
+            bs.logWrittenBlock(new BlockId("testfile", 0));
+            String expected = "Block Stats:\n-testfile:\n-- Read: 1 | Written: 1\n";
+            assert(bs.toString().equals(expected));
+        }
+        
+        catch(Exception e)
+        {
+            assert(false);
+        }
+    }
     
             
 }

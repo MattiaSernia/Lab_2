@@ -8,13 +8,12 @@ public class BlockStats {
 	// --- METHODS --- //
 	@Override
 	public String toString(){
-		String out = "";
+		String out = "Block Stats:\n";
 		for (String file : fileMap.keySet())
 		{
 			out += "-" + file + ":\n";
 			out += "-- Read: " + this.getReadCount(file) + " | Written: " + this.getWriteCount(file) + "\n"; 
 		}
-
 		return out;
 	}
 	public void logReadBlock(BlockId block){

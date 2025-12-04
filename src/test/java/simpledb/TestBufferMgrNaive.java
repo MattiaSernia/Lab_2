@@ -2,6 +2,7 @@ package simpledb;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import java.util.logging.Logger;
 
 import java.io.File;
 
@@ -15,6 +16,7 @@ import simpledb.file.FileMgr;
 import simpledb.log.LogMgr;
 
 public class TestBufferMgrNaive {
+    private static final Logger log = Logger.getLogger(TestBufferMgrFIFO.class.getName());
 	private FileMgr fm;
     private LogMgr lm;
     private BufferMgr bm;
@@ -42,24 +44,32 @@ public class TestBufferMgrNaive {
         BlockId blk2 = new BlockId("testfile", 2);
         BlockId blk3 = new BlockId("testfile", 3);
 
+        log.info("Pin three blocks")
         Buffer b0 = bm.pin(blk0);
         Buffer b1 = bm.pin(blk1);
         Buffer b2 = bm.pin(blk2);
 
         assertEquals(0, bm.available(), "All buffers should be pinned initially.");
+        log.info("Test PASSED: all buffers are correctly pinned.")
 
         // Make all candidates: unpin all in some order.
         bm.unpin(b1);
         bm.unpin(b2);
         bm.unpin(b0);
+        log.info("Unpin all the blocks in the memory.")
 
         assertEquals(3, bm.available(), "All buffers should now be available.");
+        log,info("Test PASSED: all the buffers are available since we have unpinned them.")
 
+        log.info("We pin a new block.")
         Buffer b3 = bm.pin(blk3);
 
         assertSame(b0, b3,
                 "NAIVE: expected blk3 to reuse first avaialble buffer buffer");
+        
+        log.info("Test PASSED: block 3 replaces first available buffer buffer, so block 0 gets correctly evicted.")
         assertEquals(blk3, b3.block());
+        log.info("Test PASSED: we verified that the recycled buffer is now correctly mapped to block 3.")
     }
 
 }

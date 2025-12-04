@@ -41,6 +41,7 @@ public class TestBufferMgrLRU {
 
     @Test
     public void testLRU() {
+        log.info()
         BlockId blk0 = new BlockId("testfile", 0);
         BlockId blk1 = new BlockId("testfile", 1);
         BlockId blk2 = new BlockId("testfile", 2);
@@ -67,7 +68,7 @@ public class TestBufferMgrLRU {
         log.info("Pin again the block 0, which now cannot be evicted.");
 
         assertSame(b0, b0_2);
-        log.info("");
+        log.info("Verify that blk0 was not evicted and the same buffer frame is returned, as required by LRU.");
 
 
         bm.unpin(b0_2);
@@ -79,9 +80,11 @@ public class TestBufferMgrLRU {
 
         log.info("Verify if the new block has replaced the most recently used block, b0.");
         assertNotSame(b0, b3, "LRU strategy has removed b0 which was the most recently used."); 
-        log.info("");
+        log.info("Test PASSED: block 0 has not been evicted since it was the most recently used block.");
 
+        log.info("Verify if block 1 is evicted when block 3 is pinned and brought into memory.");
         assertSame(b1, b3, "LRU has not removed the least recently used block, which was b1.");
+        log.info("Test PASSED: block 1 is correcy evicted and block 3 takes its place");
 
     }
 
